@@ -171,4 +171,44 @@ Bellville, South Africa\\
 \pgfuseimage{Cluster-Management}
 \end{frame}
 
+\begin{frame}
+\frametitle{Cluster Deployment}
+\begin{itemize}
+\item All cluster nodes run CentOS 6.5
+\item Installation was done using \textbf{cobbler}:
+\begin{itemize}
+\item cobbler on master1 manages install images
+\item DHCP and TFTP servers on master1 provide images to install when machines boot using PXE boot
+\item Allows for hands-free install of base operating system: only manual intervention is post-installation networking config
+\end{itemize}
+\item Post-install configuration done using \textbf{ansible}
+\begin{itemize}
+\item ansible allows config to be scripted and pushed out to whole cluster in single command
+\end{itemize}
+\item Timon cluster was prototype environment, lessons from Timon deployment were used to streamline larger Pumbaa deployment
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cluster Management}
+\begin{itemize}
+\item Manager servers are virtual machines that themselves run on master1 and master2 nodes
+\begin{itemize}
+\item This allows different software roles to be deployed on independent machines, with no clashing dependencies
+\item By using virtual machines, the resource limits (disk/CPU/RAM) of management servers can be specified up front
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cluster Authentication and Name Services}
+\begin{itemize}
+\item All machines in cluster operate within \textbf{astroclust.uwc.ac.za} domain and private IP network space
+\item Authentication is managed by \textbf{FreeIPA} running on auth1 and auth2 VMs
+\item FreeIPA combines LDAP server (389DS), DNS server (bind) and Kerberos to manager user and machine identity and authorisation
+\item User and machine records can be created and edited using command-line tools or web interface
+\item UWC DNS provides secondary DNS, and cluster queries UWC DNS, ensuring that DNS continues to work even if master1 or master2 are down
+\item FreeIPA servers are configured with master-master replication, allowing failover in case one of the authentication servers is down
+\end{itemize}
+\end{frame}
 \end{document}
