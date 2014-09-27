@@ -1,0 +1,260 @@
+%% LaTeX Beamer presentation template (requires beamer package)
+%% see http://bitbucket.org/rivanvx/beamer/wiki/Home
+%% idea contributed by H. Turgut Uyar
+%% template based on a template by Till Tantau
+%% this template is still evolving - it might differ in future releases!
+
+\documentclass[handout]{beamer}
+
+\mode<presentation>
+{
+\usetheme{Warsaw}
+
+\setbeamercovered{transparent}
+}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{pgf}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage[round]{natbib}
+\renewcommand{\cite}[1]{{\small\citep{#1}}} 
+\def\newblock{\hskip .11em plus .33em minus .07em}
+\usepackage{numprint}
+
+% font definitions, try \usepackage{ae} instead of the following
+% three lines if you don't like this look
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+
+
+\usepackage[T1]{fontenc}
+
+\pgfdeclareimage[height=0.15\textheight]{UWC-logo}{images/UWClogo.png}
+\logo{\href{http://www.uwc.ac.za}{\pgfuseimage{UWC-logo}}}
+
+% \setbeamertemplate{sidebar left}{%
+%    \vfill%
+%    \rlap{\hskip0.1cm%
+%          \href{http://www.uwc.ac.za}%
+%          {\pgfuseimage{UWC-logo}}}%
+%    \vskip2pt%
+%    \llap{\usebeamertemplate***{navigation symbols}\hskip0.1cm}%
+%    \vskip2pt%
+% } 
+
+\title{UWC Astrophysics Cluster}
+
+\subtitle{Low Cost High Performance Computing}
+
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+%\author{F.~Author\inst{1} \and S.~Another\inst{2}}
+\author{\texorpdfstring{Peter~van~Heusden\newline
+~pvh@sanbi.ac.za}{Peter~van~Heusden}}
+
+
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+\institute[UWC]
+{
+Information and Communication Services\\
+University of the Western Cape\\
+Bellville, South Africa\\
+\insertlogo}
+
+\date{September 2014}
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+\subject{Talks}
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+% \AtBeginSubsection[]
+% {
+% \begin{frame}<beamer>
+% \frametitle{Outline}
+% \tableofcontents[currentsection,currentsubsection]
+% \end{frame}
+% }
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command:
+
+%\beamerdefaultoverlayspecification{<+->}
+\setbeamertemplate{bibliography item}[text]
+
+\begin{document}
+
+\begin{frame}
+\logo{}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{UWC Astrophysics Cluster}
+\begin{itemize}
+\item 23 worker nodes, 2 master nodes in two clusters
+\item Built from Supermicro servers, AMD Opteron processors
+\pause
+\item Timon cluster: 
+\begin{itemize}
+\item 4 worker nodes, 192 cores
+\item 1024 GB RAM
+\item 39 TB filesystem distributed over worker nodes (CephFS)
+\end{itemize}
+\pause
+\item{Pumbaa cluster:}
+\begin{itemize}
+\item 19 worker nodes, 912 cores
+\item 4864 GB RAM
+\item 133 /data distributed filesystem (GlusterFS)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\pgfdeclareimage[height=0.8\textheight]{Cluster-Diagram}{images/cluster_diagram.png}
+\begin{frame}[fragile]
+\frametitle{Astrophysics Cluster Diagram}
+\begin{columns}
+\column{1.2\textwidth}{
+  % \hspace{-1cm}
+  \pgfuseimage{Cluster-Diagram}
+}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Networking}
+\begin{itemize}
+\item Each cluster has a 10 Gb Ethernet and 1 Gb Ethernet switch
+\item 1 GbE provides management layer
+\begin{itemize}
+\item Used for initial software installation, authentication and cluster management
+\end{itemize}
+\item 10 GbE used for parallel computing and distributed filesystem
+\begin{itemize}
+\item Each cluster node (and master) has dual 10GbE twisted pair connections
+\item Allows for independent data paths for MPI (parallel computing) and filesystem (storage)
+\end{itemize}
+\item Two clusters are connected by VLAN operating on ICS network core switch
+\begin{itemize}
+\item No high throughput or low latency traffic between clusters
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{One, two, many HPCs}
+\begin{itemize}
+  \item Before 1990, HPC meant hugely expensive computers built on national or
+  regional scale
+  \item Institute-level computing in 1990s was dominated by individual SMP
+  machines
+  \item Mid-to-late 90s saw birth of the commodity cluster (Beowulf)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{One, two, many HPCs (cont)}
+\begin{itemize}
+  \item Now: HPC everywhere, but skills hard to find
+  \item The few courses that exist focus on HPC programming (parallel
+  applications, MPI, etc)
+  \item HPC exists alongside ``cyberinfrastructure'' and ``cloud'': different
+\  environments but all based on complex and often poorly documented software
+\end{itemize}
+\begin{quote}
+``with limited resources and expertise, even simple data discovery, collection,
+analysis, management, and sharing tasks are difficult for small teams'' (Ian
+Foster, Computation Institute)
+\end{quote}
+\end{frame}
+
+\begin{frame}
+\frametitle{How to become a (better) HPC admin}
+\begin{itemize}
+  \item \uncover<1->{Most HPC admin knowledge is passed on peer-to-peer}
+  \item \uncover<1->{Admins rely on the ``social media'' of HPC: Mailing lists,
+  technical blogs, IRC}
+  \item \uncover<1->{Networking happens sporadically} 
+  \begin{itemize}
+    \item \uncover<2->{- HPC admins don't get out much}
+  \end{itemize} 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The HPC Forum plan}
+\begin{itemize}
+  \item First face to face seminar day: mid-February 2014
+  \item Minimal wiki:
+  \href{http://hpcforum.sanbi.ac.za}{http://hpcforum.sanbi.ac.za}
+  \begin{itemize}
+    \item Will soon move to
+    \href{http://hpcforum.org.za}{http://hpcforum.org.za}
+  \end{itemize}
+  \item Grow (mailing list) membership
+  \item Keep producing (and linking to) tech blogs
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{HPC research and teaching}
+\begin{itemize}
+    \item HPC admin has historically been seen as an operations issue
+    \item Academic interest has been limited and curricula non-existent
+    \pause
+    \item HPC Forum could:
+    \begin{itemize}
+      \item Collect and curate teaching materials on HPC admin
+      \item Provide space for learning and experimentation in HPC
+      \item Increase the profile of HPC as an area of research and learning
+      \item Create a collective experimental community for HPC technology
+      \item Contribute ``infrastructure code'' to a shared repository (e.g.
+      SAGridOps on Github)
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Related initiatives}
+\begin{itemize}
+  \item Africa-Arabia Regional Operations Centre
+  \pause
+  \item SADC HPC Forum : human capital development in HPC
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,c]
+\begin{center}
+\Huge{Over to you.}
+\end{center}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Outline}
+% \tableofcontents
+% % You might wish to add the option [pausesections]
+% \end{frame}
+
+
+\end{document}
