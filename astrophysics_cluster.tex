@@ -211,4 +211,108 @@ Bellville, South Africa\\
 \item FreeIPA servers are configured with master-master replication, allowing failover in case one of the authentication servers is down
 \end{itemize}
 \end{frame}
+
+\section{Cluster Computing}
+
+\begin{frame}
+\frametitle{Cluster Scheduler environment}
+\begin{itemize}
+\item Computing is managed using the \textbf{Torque} batch scheduler
+\begin{itemize}
+\item Extremely common scheduler in HPC environments: ensures that users can re-use existing skills
+\item Integrates with OpenMPI for parallel job execution
+\end{itemize}
+\item Software installations are managed using the \textbf{Environment Modules} package
+\begin{itemize}
+\item Scientific software is installed on /opt filesystem that is shared across all compute nodes in a cluster
+\item Environment can be customized using \textbf{module add} command 
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Running jobs on the cluster}
+\begin{itemize}
+\item Single manager node (manager1) controls execution on both clusters
+\begin{itemize}
+\item Clusters operate as independent computing units, with nodes on Timon and Pumbaa being addressed by different batch queues
+\item Small user community has meant that scheduling and resource allocation can be kept simple
+\end{itemize}
+\item \textbf{OpenMPI} allows MPI-enabled programs to run in parallel, using up to 912 CPU cores (whole of Pumbaa)
+\begin{itemize}
+\item MPI locked to always use 10GbE network
+\item In future will partition 10GbE as separate MPI and storage VLANs to ensure that MPI latency is kept as low as possible
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Cluster Storage}
+
+\begin{frame}
+\frametitle{Cluster Storage}
+\begin{itemize}
+\item Cluster purchased without providing external storage
+\item This required investigation of distributed filesystems (DFS):
+\begin{itemize}
+\item Storage is distributed across the worker nodes in each cluster
+\end{itemize}
+\item Three different DFS solutions were investigated:
+\begin{itemize}
+\item \textbf{MooseFS} (didn't scale to 10GbE speeds)
+\item \textbf{CephFS} (in use on Timon)
+\item \textbf{GlusterFS} (in use on Pumbaa)
+\end{itemize}
+\item Further investigation: \textbf{BeeGFS} on Timon
+\end{itemize}
+\end{frame}
+
+\pgfdeclareimage[width=0.9\textwidth]{Timon-Ceph}{images/ceph_cluster.png}
+\begin{frame}
+\frametitle{CephFS (on Timon)}
+\pgfuseimage{Timon-Ceph}
+\end{frame}
+
+\begin{frame}
+\frametitle{CephFS architecture}
+\begin{itemize}
+\item \textbf{Ceph} is an open source distributed object store and filesystem
+\begin{itemize}
+\item Object storage on disk is managed by Object Storage Daemons (OSDs)
+\item Objects are looked up by querying a distributed hash table that is managed by Monitor Daemons (MONs)
+\item The CephFS filesystem translates filesystem paths to object IDs using Metadata Server Daemons (MDSs)
+\end{itemize}
+\item{On Timon each server is a client and mounts the distributed filesystem that provides /data, /home and /opt}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problems with Ceph on Timon}
+\begin{itemize}
+\item A cluster as small as Timon doesn't need 5 MONs, 3 would be adequate
+\item Mounting /home as a DFS means that running jobs and interactive users on master1 share the same filesystem
+\begin{itemize}
+\item Interactive usage patterns (e.g. metadata access for commands such as ls) conflict with the bulk data writes of HPC jobs
+\item As a result users experience poor response when using master1 interactively
+\end{itemize}
+\item CephFS current release is buggy e.g. files become invisible
+\begin{itemize}
+\item This might change in the next 12 months: RedHat, purchased Inktank, the original Ceph developers, and have devoted more developers to CephFS
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Future of storage for Timon cluster}
+\begin{itemize}
+\item CephFS will be replaced, possibly by \textbf{BeeGFS}
+\begin{itemize}
+\item BeeGFS (formerly FhGFS) is a high-performance parallel filesystem
+\end{itemize}
+\item BeeGFS promises better metadata performance than GlusterFS and more stability than CephFS
+\item Caveat: BeeGFS lacks high availability (HA) features that CephFS and GlusterFS provide, but thus far we've had good uptime and HA is low priority
+\end{itemize}
+\end{frame}
+
 \end{document}
+
