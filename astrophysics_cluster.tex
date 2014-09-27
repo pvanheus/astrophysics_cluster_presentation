@@ -115,21 +115,28 @@ Bellville, South Africa\\
 \begin{itemize}
 \item 23 worker nodes, 2 master nodes in two clusters
 \item Built from Supermicro servers, AMD Opteron processors
-\pause
-\item Timon cluster: 
+% \pause
+\item Timon cluster:
 \begin{itemize}
 \item 4 worker nodes, 192 cores
 \item 1024 GB RAM
-\item 39 TB filesystem distributed over worker nodes (CephFS)
+\item 39 TB file system distributed over worker nodes (CephFS)
 \end{itemize}
-\pause
+% \pause
 \item{Pumbaa cluster:}
 \begin{itemize}
 \item 19 worker nodes, 912 cores
 \item 4864 GB RAM
-\item 133 /data distributed filesystem (GlusterFS)
+\item 133 TB distributed file system (GlusterFS)
 \end{itemize}
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Impact of the Astrophysics Cluster}
+\begin{quotation}
+[The Astrophysics Cluster] is running forefront hydrodynamic simulations of galaxy formation and cosmology, in order to better understand the physical processes that give rise the universe as observed from the Big Bang until today. A single typical state of the art simulation requires of order one million node hours, and many such simulations need to be run to explore parameter space and to span the relevant dynamic range. The cluster provides the bulk of the computing power required for Prof Dav\'{e}'s group, which includes three postdocs, three students, and numerous collaborators at UWC and elsewhere including the U.S., Germany, and Denmark. This local and flexible resource has been invaluable so far, and is being used essentially constantly at full capacity.
+\end{quotation}
 \end{frame}
 
 \pgfdeclareimage[height=0.8\textheight]{Cluster-Diagram}{images/cluster_diagram.png}
@@ -146,15 +153,15 @@ Bellville, South Africa\\
 \begin{frame}
 \frametitle{Networking}
 \begin{itemize}
-\item Each cluster has a 10 Gb Ethernet and 1 Gb Ethernet switch
+\item Each cluster has a 10 Gb Ethernet and a 1 Gb Ethernet switch
 \item 1 GbE provides management layer
 \begin{itemize}
 \item Used for initial software installation, authentication and cluster management
 \end{itemize}
-\item 10 GbE used for parallel computing and distributed filesystem
+\item 10 GbE used for parallel computing and distributed file system
 \begin{itemize}
 \item Each cluster node (and master) has dual 10GbE twisted pair connections
-\item Allows for independent data paths for MPI (parallel computing) and filesystem (storage)
+\item Allows for independent data paths for MPI (parallel computing) and file system (storage)
 \end{itemize}
 \item Two clusters are connected by VLAN operating on ICS network core switch
 \begin{itemize}
@@ -179,11 +186,11 @@ Bellville, South Africa\\
 \begin{itemize}
 \item cobbler on master1 manages install images
 \item DHCP and TFTP servers on master1 provide images to install when machines boot using PXE boot
-\item Allows for hands-free install of base operating system: only manual intervention is post-installation networking config
+\item Allows for hands-free install of base operating system: only manual intervention is post-installation networking configuration
 \end{itemize}
 \item Post-install configuration done using \textbf{ansible}
 \begin{itemize}
-\item ansible allows config to be scripted and pushed out to whole cluster in single command
+\item With Ansible system configuration is scripted and pushed out to whole cluster in a single command
 \end{itemize}
 \item Timon cluster was prototype environment, lessons from Timon deployment were used to streamline larger Pumbaa deployment
 \end{itemize}
@@ -194,7 +201,7 @@ Bellville, South Africa\\
 \begin{itemize}
 \item Manager servers are virtual machines that themselves run on master1 and master2 nodes
 \begin{itemize}
-\item This allows different software roles to be deployed on independent machines, with no clashing dependencies
+\item Different software roles are deployed on independent machines, with no clashing dependencies
 \item By using virtual machines, the resource limits (disk/CPU/RAM) of management servers can be specified up front
 \end{itemize}
 \end{itemize}
@@ -208,7 +215,16 @@ Bellville, South Africa\\
 \item FreeIPA combines LDAP server (389DS), DNS server (bind) and Kerberos to manager user and machine identity and authorisation
 \item User and machine records can be created and edited using command-line tools or web interface
 \item UWC DNS provides secondary DNS, and cluster queries UWC DNS, ensuring that DNS continues to work even if master1 or master2 are down
-\item FreeIPA servers are configured with master-master replication, allowing failover in case one of the authentication servers is down
+\item FreeIPA servers are configured with master-master replication, ensuring high availability of authentication service
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Monitoring the Astrophysics Cluster}
+\begin{itemize}
+\item System utilisation is captured and graphed using \textbf{Ganglia}
+\item Utilisation and service availability is also monitoring using SNMP
+\item ICS OpManager sends alerts to support staff whenever an element of the Cluster is down
 \end{itemize}
 \end{frame}
 
@@ -219,13 +235,12 @@ Bellville, South Africa\\
 \begin{itemize}
 \item Computing is managed using the \textbf{Torque} batch scheduler
 \begin{itemize}
-\item Extremely common scheduler in HPC environments: ensures that users can re-use existing skills
+\item Extremely common scheduler in high performance computing (HPC) environments, so users can re-use existing skills
 \item Integrates with OpenMPI for parallel job execution
 \end{itemize}
 \item Software installations are managed using the \textbf{Environment Modules} package
 \begin{itemize}
-\item Scientific software is installed on /opt filesystem that is shared across all compute nodes in a cluster
-\item Environment can be customized using \textbf{module add} command 
+\item Scientific software is installed on /opt file system that is shared across all compute nodes in a cluster
 \end{itemize}
 
 \end{itemize}
@@ -242,7 +257,7 @@ Bellville, South Africa\\
 \item \textbf{OpenMPI} allows MPI-enabled programs to run in parallel, using up to 912 CPU cores (whole of Pumbaa)
 \begin{itemize}
 \item MPI locked to always use 10GbE network
-\item In future will partition 10GbE as separate MPI and storage VLANs to ensure that MPI latency is kept as low as possible
+\item In future will partition 10GbE as separate MPI and storage VLANs to keep MPI latency as low as possible
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -253,7 +268,7 @@ Bellville, South Africa\\
 \frametitle{Cluster Storage}
 \begin{itemize}
 \item Cluster purchased without providing external storage
-\item This required investigation of distributed filesystems (DFS):
+\item This required investigation of distributed file systems (DFS):
 \begin{itemize}
 \item Storage is distributed across the worker nodes in each cluster
 \end{itemize}
@@ -276,13 +291,13 @@ Bellville, South Africa\\
 \begin{frame}
 \frametitle{CephFS architecture}
 \begin{itemize}
-\item \textbf{Ceph} is an open source distributed object store and filesystem
+\item \textbf{Ceph} is an open source distributed object store and file system
 \begin{itemize}
 \item Object storage on disk is managed by Object Storage Daemons (OSDs)
 \item Objects are looked up by querying a distributed hash table that is managed by Monitor Daemons (MONs)
-\item The CephFS filesystem translates filesystem paths to object IDs using Metadata Server Daemons (MDSs)
+\item The CephFS file system translates file system paths to object IDs using Metadata Server Daemons (MDSs)
 \end{itemize}
-\item{On Timon each server is a client and mounts the distributed filesystem that provides /data, /home and /opt}
+\item{On Timon each server is a client and mounts the distributed file system that provides /data, /home and /opt}
 \end{itemize}
 \end{frame}
 
@@ -290,7 +305,7 @@ Bellville, South Africa\\
 \frametitle{Problems with Ceph on Timon}
 \begin{itemize}
 \item A cluster as small as Timon doesn't need 5 MONs, 3 would be adequate
-\item Mounting /home as a DFS means that running jobs and interactive users on master1 share the same filesystem
+\item Mounting /home as a DFS means that running jobs and interactive users on master1 share the same file system
 \begin{itemize}
 \item Interactive usage patterns (e.g. metadata access for commands such as ls) conflict with the bulk data writes of HPC jobs
 \item As a result users experience poor response when using master1 interactively
@@ -307,12 +322,54 @@ Bellville, South Africa\\
 \begin{itemize}
 \item CephFS will be replaced, possibly by \textbf{BeeGFS}
 \begin{itemize}
-\item BeeGFS (formerly FhGFS) is a high-performance parallel filesystem
+\item BeeGFS (formerly FhGFS) is a high-performance parallel file system
 \end{itemize}
 \item BeeGFS promises better metadata performance than GlusterFS and more stability than CephFS
 \item Caveat: BeeGFS lacks high availability (HA) features that CephFS and GlusterFS provide, but thus far we've had good uptime and HA is low priority
 \end{itemize}
 \end{frame}
 
+\pgfdeclareimage[width=0.9\textwidth]{Pumbaa-GlusterFS}{images/glusterfs_cluster.png}
+\begin{frame}
+\frametitle{GlusterFS on Pumbaa}
+\pgfuseimage{Pumbaa-GlusterFS}
+\end{frame}
+
+\begin{frame}
+\frametitle{GlusterFS architecture}
+\begin{itemize}
+\item \textbf{GlusterFS} is (another) open source distributed file system
+\item Data and metadata is stored in storage bricks that are arranged to create volumes
+\item Pumbaa /data is a single GlusterFS volume sliced across the worker nodes of the cluster, offering 133 TB of storage
+\item Each brick of /data is replicated on two worker nodes to ensure file system high availability
+\item /home on Pumbaa is NFS mounted volume provided by master2, to avoid the problem of DFS load slowing down interactive use
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{GlusterFS problems}
+\begin{itemize}
+\item GlusterFS has poor metadata performance
+\begin{itemize}
+\item But: HPC operations are mostly bulk data reads/writes, not metadata access
+\end{itemize}
+\item If storage elements are replaced, GlusterFS must be manually rebalanced
+\item GlusterFS lacks some of the sophistication of Ceph, but for the Astrophysics HPC use case it ``just works''
+\end{itemize}
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}
+\frametitle{Conclusion}
+\begin{itemize}
+\item UWC ICS has broken new ground by providing HPC facilities for UWC Astrophysics
+\item Using commodity hardware and open source software has kept cost down
+\item Automation tools (cobbler and ansible) allow fast and flexible deployment and cluster configuration
+\item Downtime has been minimal and has largely been related to hardware failure and power outages
+\item The cluster is in continual use at close to full capacity
+\item Experience gained in building distributed file systems is already being used to build low cost scientific storage elsewhere at UWC  (SANBI)
+\item Spare capacity on the cluster is being used to accommodate additional user groups at UWC
+\end{itemize}
+\end{frame}
 \end{document}
 
